@@ -111,6 +111,48 @@ router.get('/', authMiddleware, async(req, res) => {
     }
 });
 
+
+router.get('/leaderboard', authMiddleware, async (req, res) => {
+    try {
+        const leaderboard = await Task.aggregate([
+            { $match: { status: 'Completed' } },
+            {
+                $group: {
+                    _id: '$assignedTo',
+                    completedTasks: { $sum: 1 },
+                },
+            },
+
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+
+            { $unwind: '$user' },
+
+            {
+                $project: {
+                    name: '$user.name',
+                    email: '$user.email',
+                    completedTasks: 1,
+                },
+            },
+
+            { $sort: { completedTasks: -1 } },
+        ]);
+
+        res.json(leaderboard);
+    } catch (error) {
+        console.error('Leaderboard Fetch Error', error);
+        res.status(500).json({ msg: 'Server error' });
+    }
+});
+
+
 router.put('/:id', authMiddleware, async (req, res) => {
     const { title, description, status, priority, dueDate, assignedTo } = req.body;
 
@@ -151,5 +193,6 @@ router.delete('/:id', authMiddleware, async(req, res) => {
         res.status(500).json({ msg: 'Server error'});
     }
 });
+
 
 module.exports = router;
