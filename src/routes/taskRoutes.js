@@ -16,7 +16,19 @@ const storage = multer.diskStorage({
         cb(null, `${Date.now()}-${file.originalname}`);
     },
 });
-const upload = multer({ storage });
+const upload = multer({
+    storage,
+    fileFilter: (req, file, cb) => {
+        const filetypes = /jpeg|jpg|png/;
+        const extname = filetypes.test(path.extname(file.originalname).toLocaleLowerCase());
+        const mimetype = filetypes.test(file.mimetype);
+        if (extname && mimetype) {
+            return cb(null, true);
+        }
+        cb(new Error('Only JPEG/PNG images are allowed'));
+    },
+    limits: { fileSize: 5 * 1024 * 1024 },
+});
 
 router.post(
     '/',
@@ -47,7 +59,7 @@ router.post(
                 dueDate,
                 createdBy: req.user.id,
                 assignedTo: assignedTo || req.user.id,
-                image: req.file ? req.file.path : null,
+                image: req.file ? `/uploads/${req.file.filename}` : null,
             });
             await task.save();
 
