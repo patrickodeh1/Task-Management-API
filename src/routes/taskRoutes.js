@@ -1,7 +1,7 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
 const authMiddleware = require('../middleware/authMiddleware');
-const adminMiddleware = require('../middleware/adminMiddleware');
+const User = require('../models/User');
 const Task = require('../models/Task');
 const multer = require('multer');
 const path = require('path');
@@ -25,6 +25,7 @@ router.post(
         upload.single('image'),
         check('title', 'Title is required').not().isEmpty(),
         check('dueDate', 'Due date must be a valid date').optional().isISO8601(),
+        check('assignedTo', 'Assigned user ID must be a valid ObjectID').optional().isMongoId(),
     ],
     async (req, res) => {
         const errors = validationResult(req);
@@ -33,6 +34,11 @@ router.post(
         const { title, description, status, priority, dueDate, assignedTo } = req.body;
 
         try {
+            if (assignedTo) {
+                const assignedUser = await User.findById(assignedTo);
+                if (!assignedUser) return res.status(400).json({ msg: 'Assigned user does not exist' });
+            }
+
             const task = new Task({
                 title,
                 description,
@@ -44,8 +50,15 @@ router.post(
                 image: req.file ? req.file.path : null,
             });
             await task.save();
+
+            if (assignedTo && assignedTo !== req.user.id) {
+                const assignedUser = await User.findById(assignedTo);
+                console.log(`Notification: Task "${title}" assigned to ${assignedUser.email} by ${req.user.id}`);
+            }
+
             res.status(201).json(task);
         } catch (error) {
+            console.error('Task Creation Error:', error)
             res.status(500).json({ msg: 'Server error' });
         }
     }
