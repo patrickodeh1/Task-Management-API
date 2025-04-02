@@ -66,16 +66,47 @@ router.post(
 
 router.get('/', authMiddleware, async(req, res) => {
     try {
-        let tasks;
-        if (req.user.role === 'admin') {
-            tasks = await Task.find().populate('assignedTo', 'name email');
-        } else {
-            tasks = await Task.find({
-                $or: [{ createdBy: req.user.id }, {assignedTo: req.user.id }],
-            }).populate('createdBy', 'name email').populate('assignedTo', 'name email');
+        const { status, priority, dueDate, sort } = req.query;
+
+        const query = {};
+
+        if (req.user.role !== 'admin') {
+            query.$or = [
+                { createdBy: req.user.id },
+                { assignedTo: req.user.id },
+            ];
         }
-        res.json(tasks);
+
+        if (status) query.status = status;
+        if (priority) query.priority = priority;
+        if (dueDate) query.dueDate = new Date(dueDate);
+
+        const sortOptions = {};
+        if (sort) {
+            const sortField = sort.startsWith('-') ? sort.slice(1) : sort;
+            sortDirection = sort.startsWith('-') ? -1 : 1;
+            sortOptions[sortField] = sortDirection;
+            
+            if (sortField === 'dueDate') {
+                sortOptions['_id'] = sortDirection;
+            }
+        }
+
+
+        const tasks = await Task.find(query)
+            .populate('createdBy', 'name email')
+            .populate('assignedTo', 'name email')
+            .sort(sortOptions);
+        
+            if (sort && sort.includes('dueDate')) {
+                const withDueDate = tasks.filter(task => task.dueDate);
+                const withoutDueDate = tasks.filter(task => !task.dueDate);
+                res.json(sortDirection === -1 ? [...withDueDate.reverse(), ...withoutDueDate] : [...withDueDate, ...withoutDueDate]);
+            } else {
+                res.json(tasks);
+            }
     } catch (error) {
+        console.error('Task Fetch Error:', error);
         res.status(500).json({ msg: 'Server error' });
     }
 });
