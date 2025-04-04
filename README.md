@@ -43,7 +43,8 @@ A RESTful API for managing tasks with user authentication, role-based access (ad
     MONGO_URI=mongodb://localhost/task-management-api
     JWT_SECRET=mysecretkey
     ```
-    - Replace MONGO_URI with your MongoDB connection string.
+    - MONGO_URI: Use mongodb://localhost/task-management-api for a local MongoDB instance (default). Replace it with your cloud connection string (e.g., from MongoDB Atlas) if using a cloud database.
+
     - Replace JWT_SECRET with a strong, random secret key. You can generate one using:
     ```bash
     node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
