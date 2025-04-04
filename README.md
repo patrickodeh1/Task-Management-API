@@ -9,6 +9,7 @@ A RESTful API for managing tasks with user authentication, role-based access (ad
 - [Authentication](#authentication)
 - [Error Handling](#error-handling)
 - [Testing](#testing)
+- [Design Decisions](#design-decisions)
 
 ## Features
 - User registration and login with JWT authentication.
@@ -162,3 +163,25 @@ Get Leaderboard
 curl http://localhost:3000/api/tasks/leaderboard \
 -H "Authorization: Bearer <token>"
 ```
+
+## Design Decisions
+
+The following choices were made to balance simplicity, security, and functionality:
+
+- Node.js and Express: Selected for their lightweight, event-driven architecture, ideal for RESTful APIs. Express simplifies routing and middleware, accelerating development.
+
+- MongoDB: A NoSQL database was chosen for its schema flexibility, accommodating optional task fields (e.g., image, dueDate). Its JSON-like documents integrate seamlessly with the API.
+
+- JWT Authentication: Provides stateless, secure user authentication. A 1-hour token expiration enhances security while remaining user-friendly, with re-login as a simple renewal mechanism.
+
+- Role-Based Access: Implemented with user and admin roles to enforce data privacy (users see only their tasks) and administrative control (admins see all tasks), using middleware for scalability.
+
+- Image Uploads via Multer: Added to enrich tasks with visuals, limited to JPEG/PNG and 5MB to control resource usage. Multer’s simplicity made it the preferred choice.
+
+- Leaderboard: Built with MongoDB aggregation for efficient querying of completed tasks, offering a motivational feature and admin insights into user performance.
+
+- Middleware: Authentication (authMiddleware) and authorization (adminMiddleware) are separated for reusability and maintainability across routes.
+
+- Error Handling: Consistent JSON responses (e.g., { "msg": "..." }) and express-validator ensure robust input validation and clear feedback.
+
+- Testing: Jest with MongoMemoryServer enables fast, isolated unit tests, ensuring reliability without a persistent database dependency.

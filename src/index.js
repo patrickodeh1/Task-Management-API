@@ -10,7 +10,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use('/uploads', express.static('uploads'));
 
-
 // connecting the database
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("Connected to:", mongoose.connection.name))
