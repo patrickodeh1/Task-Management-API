@@ -39,13 +39,16 @@ A RESTful API for managing tasks with user authentication, role-based access (ad
 
 3. Create a .env file in the root directory:
     ```env
-    PORT=3000
+    PORT=5000
     MONGO_URI=mongodb://localhost/task-management-api
     JWT_SECRET=mysecretkey
-
-- Replace MONGO_URI with your MongoDB connection string.
-- Replace JWT_SECRET with you JWT token
-
+    ```
+    - Replace MONGO_URI with your MongoDB connection string.
+    - Replace JWT_SECRET with a strong, random secret key. You can generate one using:
+    ```bash
+    node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+    ```
+    This creates a 64-character hexadecimal string (e.g., a1b2c3...). Copy the output into your .env file as JWT_SECRET=your-generated-key.
 
 4. Create an uploads/ directory for image storage:
     ```bash
