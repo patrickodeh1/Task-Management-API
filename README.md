@@ -139,7 +139,7 @@ All task endpoints require an Authorization header: Bearer <token\>.
 
 Register a User
 ```bash
-curl -X POST http://localhost:3000/api/auth/register \
+curl -X POST http://localhost:5000/api/auth/register \
 -H "Content-Type: application/json" \
 -d '{"name": "John Doe", "email": "john@example.com", "password": "123456"}'
 ```
@@ -153,7 +153,7 @@ curl -X POST http://localhost:3000/api/auth/login \
 
 Create a Task with Image
 ```bash
-curl -X POST http://localhost:3000/api/tasks \
+curl -X POST http://localhost:5000/api/tasks \
 -H "Authorization: Bearer <token>" \
 -F "title=Test Task" \
 -F "description=Test Description" \
@@ -164,7 +164,7 @@ curl -X POST http://localhost:3000/api/tasks \
 
 Get Leaderboard
 ```bash
-curl http://localhost:3000/api/tasks/leaderboard \
+curl http://localhost:5000/api/tasks/leaderboard \
 -H "Authorization: Bearer <token>"
 ```
 
