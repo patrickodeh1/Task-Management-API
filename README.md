@@ -146,7 +146,7 @@ curl -X POST http://localhost:5000/api/auth/register \
 
 Login
 ```bash
-curl -X POST http://localhost:3000/api/auth/login \
+curl -X POST http://localhost:5000/api/auth/login \
 -H "Content-Type: application/json" \
 -d '{"email": "john@example.com", "password": "123456"}'
 ```
