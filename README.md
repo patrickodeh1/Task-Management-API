@@ -30,7 +30,7 @@ A RESTful API for managing tasks with user authentication, role-based access (ad
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/patrickodeh1/Task-Management-System.git
+   git clone https://github.com/patrickodeh1/Task-Management-API.git
    cd Task-Management-API
 
 2. Install dependencies:
